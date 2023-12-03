@@ -69,16 +69,18 @@ class MLP:
     def sigmoid_derivative(self, x):
         return x * (1 - x)
 
+    # def relu_activation_function(self, x):
+    #         return np.maximum(x,0)
+    #
+    # def relu_derivative(self,x):
+    #         return np.where(x > 0, 1, 0)
+
+
     def train(self, X, y, epochs=1000, learning_rate=0.1):
         for epoch in range(epochs):
-            # Forward pass
-            hidden1_layer_input = np.dot(X, self.weights_input_hidden1)
-            hidden1_layer_output = self.sigmoid(hidden1_layer_input)
-            hidden2_layer_input = np.dot(hidden1_layer_output,self.weights_hidden1_hidden2)
-            hidden2_layer_output = self.sigmoid(hidden2_layer_input)
-
-
-            # obliczanie przewidywanego wejścia
+            # Forward pass i obliczanie przewidywanego wejścia
+            hidden1_layer_output = self.sigmoid(np.dot(X, self.weights_input_hidden1))
+            hidden2_layer_output = self.sigmoid(np.dot(hidden1_layer_output,self.weights_hidden1_hidden2))
             predicted_output = self.sigmoid(np.dot(hidden2_layer_output, self.weights_hidden2_output))
 
             # propagacja wsteczna, aktualizowanie wag
@@ -110,17 +112,17 @@ def cross_validation(X, y, hidden_size1, hidden_size2, learning_rate, epochs, n_
     accuracies = []
 
     for i in range(n_splits):
-        val_indices = np.arange(i * fold_size, (i + 1) * fold_size)
+        test_indices = np.arange(i * fold_size, (i + 1) * fold_size)
         train_indices = np.concatenate([np.arange(0, i * fold_size), np.arange((i + 1) * fold_size, len(X))])
 
-        X_train, X_val = X[train_indices], X[val_indices]
-        y_train, y_val = y[train_indices], y[val_indices]
+        X_train, X_test = X[train_indices], X[test_indices]
+        y_train, y_test = y[train_indices], y[test_indices]
 
         mlp = MLP(X_train.shape[1], hidden_size1, hidden_size2, 1)
         mlp.train(X_train, y_train, epochs=epochs, learning_rate=learning_rate)
 
-        predictions = mlp.predict(X_val)
-        accuracy = np.mean((predictions > 0.5) == y_val)
+        predictions = mlp.predict(X_test)
+        accuracy = np.mean((predictions > 0.5) == y_test)
         accuracies.append(accuracy)
 
     return np.mean(accuracies)
@@ -136,7 +138,7 @@ for hidden_size1 in [5, 50]:
     for hidden_size2 in [10, 100]:
         for learning_rate in [0.01, 0.5]:
             for epochs in [500, 1000, 1500]:
-                accuracy = cross_validation(X_train, y_train, hidden_size1, hidden_size2, learning_rate, epochs)
+                accuracy = cross_validation(X_val, y_val, hidden_size1, hidden_size2, learning_rate, epochs)
                 print(f"Hidden Size 2: {hidden_size2}, Hidden Size 1: {hidden_size1}, Learning Rate: {learning_rate}, Epochs: {epochs}, Accuracy: {accuracy}")
 
                 if accuracy > best_accuracy:
@@ -157,7 +159,7 @@ print(f"\nBest epochs amount: {best_epochs}, Best learning rate: {best_learning_
 
 # Policzenie dokładności
 accuracy = np.mean((predictions > 0.5) == y_test)
-print(f"\nAccuracy: {accuracy}")
+print(f"\nAccuracy: {round(accuracy,4)}")
 
 # Macierz pomyłek
 TP=0
@@ -165,12 +167,32 @@ TN=0
 FP=0
 FN=0
 for i,j in zip(predictions,y_test):
-    if ((i>0.5)==j):
+    if ((i>0.5) and j==1):
         TP = TP + 1
-    elif ((i>0.5)!=j):
+    elif ((i>0.5) and j!=1):
         FP = FP + 1
-    elif ((i<=0.5)!=j):
+    elif ((i<=0.5) and j!=0):
         FN = FN + 1
-    elif ((i<=0.5)==j):
+    elif ((i<=0.5) and j==0):
         TN = TN + 1
 print(f"\nConfussion matrix:\n {TP} {FP} \n {FN} {TN}")
+
+
+# Obliczenie precyzji
+if TP+FP != 0:
+    precision = TP/(TP+FP)
+    print(f"\nPrecision: {round(precision,4)}")
+else:
+    print("Cant calculate precission")
+
+# Obliczanie recall
+recall = TP/(TP+FN)
+print(f"\nRecall: {round(recall,4)}")
+
+# Oblicznie miary F1 - średnia harmoniczna
+if (TP+FP) != 0:
+    beta=1
+    f1Measure = ((1 + beta * beta) * precision * recall) / (beta * beta * precision + recall)
+    print(f"\nF1-Measure: {round(f1Measure,4)}")
+else:
+    print("Cant calculate F-Measure")
