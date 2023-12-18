@@ -47,11 +47,10 @@ X_train, X_test, y_train, y_test = train_test_split(inputs, labels, test_size=0.
 # Train & repeat
 for gamma in [0.1, 0.2, 0.5, 1.0, 1.5, 2.0, 5.0]:
     for coherence in [0.1, 0.2, 0.5, 1.0, 1.5, 2.0, 5.0]:
-        for tolerance in [1e-5, 2e-5, 5e-5, 1e-4, 2e-4, 5e-4, 1e-3]:
-            svm = SVM(RFB(gamma), coherence, tolerance)
-            svm.train(X_train, y_train)
+        svm = SVM(RFB(gamma), coherence)
+        svm.train(X_train, y_train)
 
-            prediction = svm.predict(X_test)
+        prediction = svm.predict(X_test)
 
-            print("gamma: {} | coherence: {} | tolerance: {}".format(gamma, coherence, tolerance))
-            print("Accuracy:", accuracy_score(prediction, y_test))
+        print("gamma: {} | coherence: {}".format(gamma, coherence))
+        print("Accuracy:", accuracy_score(prediction, y_test))
