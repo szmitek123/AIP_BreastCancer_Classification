@@ -45,12 +45,13 @@ labels = normalizeLabels(labels)
 X_train, X_test, y_train, y_test = train_test_split(inputs, labels, test_size=0.5, random_state=42)
 
 # Train & repeat
-for gamma in [0.1, 0.2, 0.5, 1.0, 1.5, 2.0, 5.0]:
-    for coherence in [0.1, 0.2, 0.5, 1.0, 1.5, 2.0, 5.0]:
-        svm = SVM(RFB(gamma), coherence)
-        svm.train(X_train, y_train)
+for gamma in [1e-1, 2e-1, 5e-1, 1e+0, 2e+0, 5e+0]:
+    for coherence in [1e-1, 2e-1, 5e-1, 1e+0, 2e+0, 5e+0]:
+        for tolerance in [1e-5, 2e-5, 5e-5, 1e-4, 2e-4, 5e-4]:
+            svm = SVM(RFB(gamma), coherence, tolerance)
+            svm.train(X_train, y_train)
 
-        prediction = svm.predict(X_test)
+            prediction = svm.predict(X_test)
 
-        print("gamma: {} | coherence: {}".format(gamma, coherence))
-        print("Accuracy:", accuracy_score(prediction, y_test))
+            print(f"gamma: {gamma} | coherence: {coherence} | tolerance: {tolerance}")
+            print(f"Accuracy: {accuracy_score(prediction, y_test)}")

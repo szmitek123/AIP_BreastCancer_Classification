@@ -24,12 +24,7 @@ class SVM:
 
     # Calculate margin
     def margin(self, input: np.ndarray) -> np.float64:
-        sum: np.float64 = self.b
-
-        for i in range(0, self.inputs.shape[0]):
-            sum += self.a[i] * self.expect[i] * self.kernel(input, self.inputs[i])
-        
-        return sum
+        return np.sum(self.a * self.expect * self.kernel(input, self.inputs)) + self.b
     
     # Calculate prediction vector
     def predict(self, inputs: np.ndarray) -> np.ndarray:
