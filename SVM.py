@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
-from kernels.rbf import RBF
+from src.kernels.rbf import RBF
 from src.svm import SVM
 
 # Prepare read buffer
@@ -45,7 +45,7 @@ labels = normalizeLabels(labels)
 X_train, X_test, y_train, y_test = train_test_split(inputs, labels, test_size=0.5, random_state=42)
 
 # Train & repeat
-for gamma in [1e-1, 2e-1, 5e-1, 1e+0, 2e+0, 5e+0]:
+for gamma in [1e+0, 2e+0, 5e+0, 1e+1, 2e+1, 5e+1]:
     for coherence in [1e-1, 2e-1, 5e-1, 1e+0, 2e+0, 5e+0]:
         for tolerance in [1e-5, 2e-5, 5e-5, 1e-4, 2e-4, 5e-4]:
             svm = SVM(RBF(gamma), coherence, tolerance)

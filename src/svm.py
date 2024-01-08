@@ -1,7 +1,7 @@
 import numpy as np
 
 from typing import Callable
-from kernels.rbf import RBF
+from src.kernels.rbf import RBF
 
 # Support Vector Machine
 class SVM:
