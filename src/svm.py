@@ -1,13 +1,13 @@
 import numpy as np
 
 from typing import Callable
-from src.kernels.rfb import RFB
+from kernels.rbf import RBF
 
 # Support Vector Machine
 class SVM:
 
     # Constructor
-    def __init__(self, kernel: Callable[[ np.ndarray, np.ndarray ], np.float64 ] = RFB(gamma=1), coherence: np.float64 = 1, tolerance: np.float64 = 1e-4, numEpochs: int = 100, numPasses: int = 10) -> None:
+    def __init__(self, kernel: Callable[[ np.ndarray, np.ndarray ], np.float64 ] = RBF(gamma=1), coherence: np.float64 = 1, tolerance: np.float64 = 1e-4, numEpochs: int = 100, numPasses: int = 10) -> None:
         self.kernel = kernel
         self.coherence = coherence
         self.tolerance = tolerance
